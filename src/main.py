@@ -32,9 +32,7 @@ def main() -> None:
         cls()
         board.render()
 
-        _move = solvers.closest_best_simple(solver, board)
-        move = getpass.getpass(f"{_move}")
-        move = _move
+        move = getpass.getpass("")
 
         allowed = ["up", "down", "left", "right"]
         short = ["w", "s", "a", "d"]
@@ -82,11 +80,16 @@ def auto() -> None:
                 )
 
                 scores.append((board.score(), solver.turns, method[0]))
-    except AssertionError as e:
+    except Exception as e:
         print(e)
+    except KeyboardInterrupt:
+        print("---simulation stopped---")
         pass
 
     print("\n---simulation done---")
     if len(scores) > 0:
         print(f"max_score={max(scores)}")
-    print(f"scores={Counter(scores)}")
+    print("scores")
+    final_scores = Counter(scores)
+    for score in reversed(sorted(final_scores)):
+        print(f"\tmethod='{score[2]}'\t\tscore={score[0]}\tturns={score[1]}")

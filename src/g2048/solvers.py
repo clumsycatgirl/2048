@@ -139,10 +139,10 @@ def look_ahead_simple(solver: Solver, board: Board) -> str:
         return (position_score, move)
 
     score_up, score_left, score_down, score_right = (
-        test_move("w", board, 2),
-        test_move("a", board, 2),
-        test_move("s", board, 2),
-        test_move("d", board, 2),
+        test_move("w", board, 4),
+        test_move("a", board, 4),
+        test_move("s", board, 4),
+        test_move("d", board, 4),
     )
 
     move = max(score_up, score_left, score_down, score_right)[1]
