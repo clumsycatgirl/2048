@@ -47,7 +47,7 @@ def main() -> None:
 def auto() -> None:
     scores: List[Tuple[float, int, str]] = []
 
-    NUMBER_OF_ITERATIONS: int = 1
+    NUMBER_OF_ITERATIONS: int = 10
 
     methods = [
         # ("up-left", solvers.up_left),
@@ -56,7 +56,9 @@ def auto() -> None:
         # ("circular", solvers.circular),
         # ("closest_best_simple", solvers.closest_best_simple),
         # ("closest_best_circular", solvers.closest_best_circular),
-        ("look_ahead_simple", solvers.look_ahead_simple),
+        # ("look_ahead_simple", solvers.look_ahead_simple),
+        # ("look_ahead_position_aware", solvers.look_ahead_position_aware),
+        ("expectimax", solvers.expectimax),
     ]
 
     try:
@@ -80,7 +82,7 @@ def auto() -> None:
                 )
 
                 scores.append((board.score(), solver.turns, method[0]))
-    except Exception as e:
+    except AssertionError as e:
         print(e)
     except KeyboardInterrupt:
         print("---simulation stopped---")

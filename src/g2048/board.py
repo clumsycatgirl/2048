@@ -1,5 +1,5 @@
 import copy
-from random import random, randrange
+from random import random, randrange, choice
 from typing import Callable, Generator, List, Optional, Tuple
 
 
@@ -26,7 +26,7 @@ class Board:
     def __setitem__(self, coords: Tuple[int, int], value: int) -> None:
         self._data[coords[1]][coords[0]] = value
 
-    def __iter__(self) -> Generator[List[int]]:
+    def __iter__(self) -> Generator:
         for row in self._data:
             yield row
 
@@ -59,20 +59,13 @@ class Board:
         if self._data[y][x] == 0:
             return
 
-        dir_y = min(max(y - y_direction, 0), self.height - 1)
-        dir_x = min(max(x - x_direction, 0), self.width - 1)
-        if (dir_x != x or dir_y != y) and self._data[dir_y][dir_x] == self._data[y][x]:
-            self._data[y][x] = 0
-            self._data[dir_y][dir_x] *= 2
-            return
-
         new_y = y
         # > 0 up, < 0 down, 0 nothing
         while (
             new_y - y_direction != y
             and new_y - y_direction >= 0
             and new_y - y_direction < self.height
-            and self._data[new_y - y_direction][x] == 0
+            and (self._data[new_y - y_direction][x] == 0 or self._data[new_y - y_direction][x] == self._data[y][x])
         ):
             new_y -= y_direction
 
@@ -81,13 +74,17 @@ class Board:
             new_x - x_direction != x
             and new_x - x_direction >= 0
             and new_x - x_direction < self.height
-            and self._data[y][new_x - x_direction] == 0
+            and (self._data[y][new_x - x_direction] == 0 or self._data[y][new_x - x_direction] == self._data[y][x])
         ):
             new_x -= x_direction
 
+
         # print(f"{(x, y)} -> {(x, new_y)}")
         if new_y != y or new_x != x:
-            self._data[new_y][new_x] = self._data[y][x]
+            if self._data[new_y][new_x] == self._data[y][x]:
+                self._data[new_y][new_x] = self._data[y][x] * 2
+            else:
+                self._data[new_y][new_x] = self._data[y][x]
             self._data[y][x] = 0
 
     def shift_up(self) -> None:
@@ -143,15 +140,10 @@ class Board:
         if self.full():
             return
 
-        generate = random() > 0.65
-        if not generate:
-            return
+        empty_cells = [(x, y) for y in range(self.height) for x in range(self.width) if self._data[y][x] == 0]
+        x, y = choice(empty_cells)
 
-        x, y = randrange(0, self.width), randrange(0, self.height)
-        while self._data[y][x] != 0:
-            x, y = randrange(0, self.width), randrange(0, self.height)
-
-        self._data[y][x] = 4 if random() > 0.7 else 2
+        self._data[y][x] = 4 if random() < 0.1 else 2  # 10% 4, 90% 2
 
     def score(self) -> float:
         score = float("-inf")

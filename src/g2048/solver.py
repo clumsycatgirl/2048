@@ -32,4 +32,4 @@ class Solver:
 
             self.turns += 1
 
-            sleep(0.01)
+            sleep(0.1)
