@@ -8,4 +8,5 @@ sys.path.append(
 )
 
 if __name__ == "__main__":
-    runner.auto()
+    # runner.auto()
+    runner.main()

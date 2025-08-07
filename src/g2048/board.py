@@ -9,10 +9,9 @@ class Board:
         self.height: int = height
 
         self._data: List[List[int]] = [[0 for j in range(height)] for i in range(width)]
-        pass
 
     def __repr__(self) -> str:
-        rep = f"({self.height}x{self.width}),\n"
+        rep = f"({self.height}x{self.width}), score={self.score()}\n"
         for row in self:
             rep += "|"
             for cell in row:
@@ -65,7 +64,10 @@ class Board:
             new_y - y_direction != y
             and new_y - y_direction >= 0
             and new_y - y_direction < self.height
-            and (self._data[new_y - y_direction][x] == 0 or self._data[new_y - y_direction][x] == self._data[y][x])
+            and (
+                self._data[new_y - y_direction][x] == 0
+                or self._data[new_y - y_direction][x] == self._data[y][x]
+            )
         ):
             new_y -= y_direction
 
@@ -74,10 +76,12 @@ class Board:
             new_x - x_direction != x
             and new_x - x_direction >= 0
             and new_x - x_direction < self.height
-            and (self._data[y][new_x - x_direction] == 0 or self._data[y][new_x - x_direction] == self._data[y][x])
+            and (
+                self._data[y][new_x - x_direction] == 0
+                or self._data[y][new_x - x_direction] == self._data[y][x]
+            )
         ):
             new_x -= x_direction
-
 
         # print(f"{(x, y)} -> {(x, new_y)}")
         if new_y != y or new_x != x:
@@ -136,11 +140,19 @@ class Board:
                     return False
         return True
 
+    def done(self) -> bool:
+        return self.full()
+
     def _generate_random(self) -> None:
         if self.full():
             return
 
-        empty_cells = [(x, y) for y in range(self.height) for x in range(self.width) if self._data[y][x] == 0]
+        empty_cells = [
+            (x, y)
+            for y in range(self.height)
+            for x in range(self.width)
+            if self._data[y][x] == 0
+        ]
         x, y = choice(empty_cells)
 
         self._data[y][x] = 4 if random() < 0.1 else 2  # 10% 4, 90% 2

@@ -1,11 +1,13 @@
-import getpass
 from collections import Counter
 from random import random, randrange
 from typing import List, Tuple
 import os
 
+# from .g2048.input import get_input
+from .g2048.pygame.input import get_input
 from .g2048 import solvers
 from .g2048.board import Board
+from .g2048.pygame.board import PyBoard
 from .g2048.solver import Solver
 from .utils.cli import cls
 
@@ -21,19 +23,18 @@ Y   |---------------|
 
 
 def main() -> None:
-    board: Board = Board(4, 4)
+    board: PyBoard = PyBoard(4, 4)
 
     num_of_blocks = randrange(1, 4)
     for i in range(num_of_blocks):
         x, y = randrange(0, board.width), randrange(0, board.height)
         board[(x, y)] = 4 if random() > 0.7 else 2
 
-    solver = Solver("cbs", solvers.closest_best_simple)
-    while not board.full():
+    while not board.done():
         cls()
         board.render()
 
-        move = getpass.getpass("")
+        move = get_input(board)
 
         allowed = ["up", "down", "left", "right"]
         short = ["w", "s", "a", "d"]
@@ -89,11 +90,11 @@ def auto() -> None:
         print("---simulation stopped---")
         pass
 
+    final_scores = sorted(Counter(scores), key=lambda x: (-x[0], x[1]))
     print("\n---simulation done---")
     if len(scores) > 0:
-        print(f"max_score={max(scores)}")
+        print(f"max_score={final_scores[0]}")
     print("scores")
-    final_scores = sorted(Counter(final_scores), key=lambda x: (-x[0], x[1]))
     for score in final_scores:
         print(f"\tmethod='{score[2]}'\t\t\tscore={score[0]}\tturns={score[1]}")
 
@@ -108,7 +109,9 @@ def auto() -> None:
 
     with open(filename, "w") as f:
         if len(scores) > 0:
-            f.write(f"max_score: method={final_scores[0][2]}, score={final_scores[0][0]}, turns={final_scores[0][1]}\n")
+            f.write(
+                f"max_score: method={final_scores[0][2]}, score={final_scores[0][0]}, turns={final_scores[0][1]}\n"
+            )
         f.write("scores\n")
         for score in final_scores:
             print(f"\tmethod='{score[2]}'\t\t\tscore={score[0]}\tturns={score[1]}\n")
