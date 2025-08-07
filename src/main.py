@@ -2,6 +2,7 @@ import getpass
 from collections import Counter
 from random import random, randrange
 from typing import List, Tuple
+import os
 
 from .g2048 import solvers
 from .g2048.board import Board
@@ -47,17 +48,17 @@ def main() -> None:
 def auto() -> None:
     scores: List[Tuple[float, int, str]] = []
 
-    NUMBER_OF_ITERATIONS: int = 10
+    NUMBER_OF_ITERATIONS: int = 1_000
 
     methods = [
-        # ("up-left", solvers.up_left),
-        # ("down-right", solvers.down_right),
-        # ("random", solvers.random),
-        # ("circular", solvers.circular),
-        # ("closest_best_simple", solvers.closest_best_simple),
-        # ("closest_best_circular", solvers.closest_best_circular),
-        # ("look_ahead_simple", solvers.look_ahead_simple),
-        # ("look_ahead_position_aware", solvers.look_ahead_position_aware),
+        ("up-left", solvers.up_left),
+        ("down-right", solvers.down_right),
+        ("random", solvers.random),
+        ("circular", solvers.circular),
+        ("closest_best_simple", solvers.closest_best_simple),
+        ("closest_best_circular", solvers.closest_best_circular),
+        ("look_ahead_simple", solvers.look_ahead_simple),
+        ("look_ahead_position_aware", solvers.look_ahead_position_aware),
         ("expectimax", solvers.expectimax),
     ]
 
@@ -92,6 +93,24 @@ def auto() -> None:
     if len(scores) > 0:
         print(f"max_score={max(scores)}")
     print("scores")
-    final_scores = Counter(scores)
-    for score in reversed(sorted(final_scores)):
-        print(f"\tmethod='{score[2]}'\t\tscore={score[0]}\tturns={score[1]}")
+    final_scores = sorted(Counter(final_scores), key=lambda x: (-x[0], x[1]))
+    for score in final_scores:
+        print(f"\tmethod='{score[2]}'\t\t\tscore={score[0]}\tturns={score[1]}")
+
+    base_filename = "results/simulation_results.txt"
+    filename = base_filename
+    counter = 1
+
+    while os.path.exists(filename):
+        name, ext = os.path.splitext(base_filename)
+        filename = f"{name}_{counter}{ext}"
+        counter += 1
+
+    with open(filename, "w") as f:
+        if len(scores) > 0:
+            f.write(f"max_score: method={final_scores[0][2]}, score={final_scores[0][0]}, turns={final_scores[0][1]}\n")
+        f.write("scores\n")
+        for score in final_scores:
+            print(f"\tmethod='{score[2]}'\t\t\tscore={score[0]}\tturns={score[1]}\n")
+
+    print(f"\n---results written to '{filename}'---")
