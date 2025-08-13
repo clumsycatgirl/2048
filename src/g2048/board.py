@@ -164,6 +164,9 @@ class Board:
                 score = max(score, cell)
         return score
 
+    def tick(self) -> None:
+        pass
+
 
 """
 

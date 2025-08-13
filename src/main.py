@@ -30,11 +30,14 @@ def main() -> None:
         x, y = randrange(0, board.width), randrange(0, board.height)
         board[(x, y)] = 4 if random() > 0.7 else 2
 
+    solver = Solver('i-do-not-rember', solvers.expectimax)
+
     while not board.done():
-        cls()
+        # cls()
         board.render()
 
-        move = get_input(board)
+        # move = get_input(board)
+        move = solvers.expectimax(solver, board)
 
         allowed = ["up", "down", "left", "right"]
         short = ["w", "s", "a", "d"]
@@ -43,7 +46,10 @@ def main() -> None:
 
         board.step(move)
 
+        board.tick()
+
     print("\n---game over---")
+    print(board)
 
 
 def auto() -> None:
